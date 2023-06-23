@@ -1,5 +1,3 @@
-using System.Text.RegularExpressions;
-
 namespace Domain.ValueObjects;
 
 public partial record PhoneNumber

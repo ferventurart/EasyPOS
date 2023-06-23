@@ -1,6 +1,3 @@
-using ErrorOr;
-using MediatR;
-
 namespace Application.Customers.Create;
 
 public record CreateCustomerCommand(

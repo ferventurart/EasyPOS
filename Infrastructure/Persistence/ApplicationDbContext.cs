@@ -1,8 +1,6 @@
 using Application.Data;
 using Domain.Customers;
 using Domain.Primitives;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence;
 

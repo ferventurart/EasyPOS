@@ -1,5 +1,4 @@
 using Domain.Primitives;
-using Domain.ValueObjects;
 
 namespace Domain.Customers;
 
