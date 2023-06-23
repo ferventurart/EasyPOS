@@ -28,5 +28,10 @@ public sealed class Customer : AggregateRoot
     public string Email { get; private set; } = string.Empty;
     public PhoneNumber PhoneNumber { get; private set; }
     public Address Address { get; private set; }
-    public bool Active { get; set; }
+    public bool Active { get; private set; }
+
+    public static Customer UpdateCustomer(Guid id, string name, string lastName, string email, PhoneNumber phoneNumber, Address address, bool active)
+    {
+        return new Customer(new CustomerId(id), name, lastName, email, phoneNumber, address, active);
+    }
 }

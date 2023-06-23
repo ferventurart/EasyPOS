@@ -2,24 +2,29 @@ using Domain.Customers;
 using Domain.Primitives;
 using Domain.ValueObjects;
 
-namespace Application.Customers.Create;
+namespace Application.Customers.Update;
 
-internal sealed class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommand, ErrorOr<Guid>>
+internal sealed class UpdateCustomerCommandHandler : IRequestHandler<UpdateCustomerCommand, ErrorOr<Unit>>
 {
     private readonly ICustomerRepository _customerRepository;
     private readonly IUnitOfWork _unitOfWork;
-    public CreateCustomerCommandHandler(ICustomerRepository customerRepository, IUnitOfWork unitOfWork)
+    public UpdateCustomerCommandHandler(ICustomerRepository customerRepository, IUnitOfWork unitOfWork)
     {
         _customerRepository = customerRepository ?? throw new ArgumentNullException(nameof(customerRepository));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
-    public async Task<ErrorOr<Guid>> Handle(CreateCustomerCommand command, CancellationToken cancellationToken)
+    public async Task<ErrorOr<Unit>> Handle(UpdateCustomerCommand command, CancellationToken cancellationToken)
     {
         try
         {
+            if(!await _customerRepository.ExistsAsync(new CustomerId(command.Id)))
+            {
+                 return Error.NotFound("Customer.NotFound", "The customer with the provide Id was not found.");
+            }
+
             if (PhoneNumber.Create(command.PhoneNumber) is not PhoneNumber phoneNumber)
             {
-                return Error.Validation("Customer.PhonNumber", "Phone number has not valid format.");
+                return Error.Validation("Customer.PhoneNumber", "Phone number has not valid format.");
             }
 
             if (Address.Create(command.Country, command.Line1, command.Line2, command.City,
@@ -28,25 +33,22 @@ internal sealed class CreateCustomerCommandHandler : IRequestHandler<CreateCusto
                 return Error.Validation("Customer.Address", "Address is not valid.");
             }
 
-            var customer = new Customer(
-                new CustomerId(Guid.NewGuid()),
-                command.Name,
+            Customer customer = Customer.UpdateCustomer(command.Id,  command.Name,
                 command.LastName,
                 command.Email,
                 phoneNumber,
                 address,
-                true
-            );
+                command.Active);
 
-            _customerRepository.Add(customer);
+            _customerRepository.Update(customer);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return customer.Id.Value;
+            return Unit.Value;
         }
         catch (Exception ex)
         {
-            return Error.Failure("CreateCustomer.Failure", ex.Message);
+            return Error.Failure("UpdateCustomer.Failure", ex.Message);
         }
     }
 }

@@ -1,6 +1,7 @@
-namespace Application.Customers.Create;
+namespace Application.Customers.Update;
 
-public record CreateCustomerCommand(
+public record UpdateCustomerCommand(
+    Guid Id,
     string Name,
     string LastName,
     string Email,
@@ -10,4 +11,5 @@ public record CreateCustomerCommand(
     string Line2,
     string City,
     string State,
-    string ZipCode) : IRequest<ErrorOr<Guid>>;
+    string ZipCode,
+    bool Active) : IRequest<ErrorOr<Unit>>;
