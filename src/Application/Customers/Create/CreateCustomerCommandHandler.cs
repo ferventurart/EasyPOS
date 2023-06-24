@@ -4,7 +4,7 @@ using Domain.ValueObjects;
 
 namespace Application.Customers.Create;
 
-internal sealed class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommand, ErrorOr<Guid>>
+public sealed class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommand, ErrorOr<Guid>>
 {
     private readonly ICustomerRepository _customerRepository;
     private readonly IUnitOfWork _unitOfWork;
@@ -17,7 +17,7 @@ internal sealed class CreateCustomerCommandHandler : IRequestHandler<CreateCusto
     {
         if (PhoneNumber.Create(command.PhoneNumber) is not PhoneNumber phoneNumber)
         {
-            return Error.Validation("Customer.PhonNumber", "Phone number has not valid format.");
+            return Error.Validation("Customer.PhoneNumber", "Phone number has not valid format.");
         }
 
         if (Address.Create(command.Country, command.Line1, command.Line2, command.City,
